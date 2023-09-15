@@ -177,9 +177,12 @@ public class MobileNumberPlugin implements FlutterPlugin, ActivityAware, MethodC
     private void generateMobileNumber() {
         JSONArray simJsonArray = new JSONArray();
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
-            for (SubscriptionInfo subscriptionInfo : getSubscriptions()) {
-                SimCard simCard = new SimCard(telephonyManager, subscriptionInfo);
-                simJsonArray.put(simCard.toJSON());
+            List<SubscriptionInfo> subscriptionInfoList = getSubscriptions();
+            if (subscriptionInfoList != null) {
+                for (SubscriptionInfo subscriptionInfo : subscriptionInfoList) {
+                    SimCard simCard = new SimCard(telephonyManager, subscriptionInfo);
+                    simJsonArray.put(simCard.toJSON());
+                }
             }
         }
         if (simJsonArray.length()==0) {
@@ -189,10 +192,7 @@ public class MobileNumberPlugin implements FlutterPlugin, ActivityAware, MethodC
             }
         }
 
-        if (simJsonArray.toString().isEmpty()) {
-            Log.d("UNAVAILABLE", "No phone number on sim card#3");
-            result.error("UNAVAILABLE", "No phone number on sim card", null);
-        } else result.success(simJsonArray.toString());
+        result.success(simJsonArray.toString());
     }
 
 
